@@ -1,9 +1,10 @@
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from .views import AnimalListCreate, AnimalRetrieve
+from .views import AnimalList, AnimalCreate, AnimalRetrieve
 
 
 urlpatterns = [
-       path('', AnimalListCreate.as_view()),
+       path('', AnimalList.as_view()),
+       path('create/', AnimalCreate.as_view()),
        path('<id>', AnimalRetrieve.as_view()),
 ]

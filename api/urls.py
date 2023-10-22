@@ -11,12 +11,13 @@ swagger_urlpatterns = [
 ]
 
 jwt_urlpatterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 
 urlpatterns = [
        path('animals/', include('animals.urls'), name='animals_api'),
-       path('users/', include('account.urls'), name='account_api')
+       path('users/', include('account.urls'), name='account_api'),
+       path('animal-care/', include('animal_care.urls'), name='animal_care_api')
 ] + swagger_urlpatterns + jwt_urlpatterns

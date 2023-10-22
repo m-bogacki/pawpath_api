@@ -34,5 +34,5 @@ class Animal(models.Model):
 
     name = models.CharField(max_length=60)
     species = models.CharField(choices=ANIMAL_CHOICES, max_length=10, default=ANIMAL_CHOICES[0])
-    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=False)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=False)
     care_instructions = models.OneToOneField(CareInstructions, on_delete=models.CASCADE, null=True, blank=True)

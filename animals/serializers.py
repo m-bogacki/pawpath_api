@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Animal, CareInstructions
 from account.models import User
-from account.serializers import UserSerializer
+from account.serializers import UserListSerializer
 
 
 class CareInstructionsSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class CareInstructionsSerializer(serializers.ModelSerializer):
 
 class AnimalListSerializer(serializers.ModelSerializer):
     care_instructions = CareInstructionsSerializer()
-    owner = UserSerializer()
+    owner = UserListSerializer(many=False)
 
     class Meta:
         model = Animal
@@ -22,7 +22,6 @@ class AnimalListSerializer(serializers.ModelSerializer):
         
 
 class AnimalCreateSerializer(serializers.ModelSerializer):
-    care_instructions = CareInstructionsSerializer()
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
@@ -30,8 +29,5 @@ class AnimalCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
     def create(self, validated_data):
-        owner = validated_data.pop('owner')
-        care_instructions = validated_data.pop('care_instructions')
-        cr = CareInstructions.objects.create(**care_instructions)
-        animal = Animal.objects.create(owner=owner, care_instructions=cr, **validated_data)
+        animal = Animal.objects.create(**validated_data)
         return animal

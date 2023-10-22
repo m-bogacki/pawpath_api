@@ -10,16 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
 
-class AnimalListCreate(generics.ListCreateAPIView):
+class AnimalCreate(generics.CreateAPIView):
     queryset = Animal.objects.all()
-
-    def list(self, request):
-        self.queryset = self.queryset.all()
-        id_filter = request.query_params.get('id')
-        if id_filter:
-            self.queryset = self.queryset.filter(id=id_filter)
-        serializer = AnimalListSerializer(self.queryset, many=True)
-        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = AnimalCreateSerializer(data=request.data)
@@ -32,6 +24,8 @@ class AnimalListCreate(generics.ListCreateAPIView):
             return Response(data=serializer.data)      
         except ValidationError as e:
             return Response(data={"error": str(e.detail)})
+
+
 
 class AnimalRetrieve(generics.RetrieveAPIView):
     queryset = Animal.objects.all()
@@ -55,4 +49,13 @@ class AnimalRetrieve(generics.RetrieveAPIView):
             return Response(data={"error": str(e)})
 
 
+class AnimalList(generics.ListAPIView):
+    queryset = Animal.objects.all()
 
+    def list(self, request):
+        self.queryset = self.queryset.all()
+        id_filter = request.query_params.get('id')
+        if id_filter:
+            self.queryset = self.queryset.filter(id=id_filter)
+        serializer = AnimalListSerializer(self.queryset, many=True)
+        return Response(serializer.data)
