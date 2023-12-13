@@ -1,61 +1,42 @@
-from django.shortcuts import render
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
-from rest_framework import generics
-from .models import Animal
-from .serializers import AnimalListSerializer, AnimalCreateSerializer
+from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
-from django.core.exceptions import ObjectDoesNotExist
+from .models import Animal, CareInstructions
+from .serializers import AnimalListSerializer, AnimalCreateSerializer, CareInstructionsSerializer
+
+
 # Create your views here.
 
 
 class AnimalCreate(generics.CreateAPIView):
     queryset = Animal.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        serializer = AnimalCreateSerializer(data=request.data)
-        try:
-            if not request.user.is_authenticated:
-                raise AuthenticationFailed("User is not authenticated", 403)
-
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-            return Response(data=serializer.data)      
-        except ValidationError as e:
-            return Response(data={"error": str(e.detail)})
-
-
-
-class AnimalRetrieve(generics.RetrieveAPIView):
-    queryset = Animal.objects.all()
-    
-    def retrieve(self, request, id):
-        self.queryset = self.queryset.all()
-        try:
-            if id:
-                self.queryset = self.queryset.get(id=id)
-                
-            serializer = AnimalListSerializer(self.queryset)
-            return Response(serializer.data)
-        
-        except ObjectDoesNotExist as e:
-            return Response(data={"error": "There is no Animal with this ID"})            
-        
-        except AttributeError as e:
-            return Response(data={"error": str(e)})
-
-        except Exception as e:
-            return Response(data={"error": str(e)})
+    serializer_class = AnimalCreateSerializer
 
 
 class AnimalList(generics.ListAPIView):
     queryset = Animal.objects.all()
+    serializer_class = AnimalListSerializer
 
-    def list(self, request):
-        self.queryset = self.queryset.all()
-        id_filter = request.query_params.get('id')
-        if id_filter:
-            self.queryset = self.queryset.filter(id=id_filter)
-        serializer = AnimalListSerializer(self.queryset, many=True)
+
+class AnimalRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalListSerializer
+    
+class CareInstructionsUpdate(APIView):
+
+    @extend_schema(responses=CareInstructionsSerializer, request=CareInstructionsSerializer)
+    def patch(self, request, pk=None, *args, **kwargs):
+        animal = Animal.objects.get(pk=pk)
+        instance = CareInstructions.objects.filter(animal=animal).first()
+        if not instance:
+            return Response({"detail": "CareInstructions not found for the specified animal."}, status=status.HTTP_404_NOT_FOUND)
+
+        
+        serializer = CareInstructionsSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
+        
