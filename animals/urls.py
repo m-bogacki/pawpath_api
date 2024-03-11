@@ -3,8 +3,8 @@ from .views import AnimalList, AnimalCreate, AnimalRetrieveUpdateDestroyView, Ca
 
 
 urlpatterns = [
-       path('<int:pk>/update-care-instructions', CareInstructionsUpdate.as_view()),
-       path('<int:pk>', AnimalRetrieveUpdateDestroyView.as_view()),
        path('', AnimalList.as_view()),
+       path('<int:pk>/update-care-instructions/', CareInstructionsUpdate.as_view()),
+       path('<int:pk>/', AnimalRetrieveUpdateDestroyView.as_view()),
        path('create/', AnimalCreate.as_view()),
 ]

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Animal, CareInstructions
 from account.models import User
 from account.serializers import UserListSerializer
+from drf_extra_fields.fields import Base64ImageField
 
 
 class CareInstructionsSerializer(serializers.ModelSerializer):
@@ -24,6 +25,7 @@ class AnimalListSerializer(serializers.ModelSerializer):
         
 
 class AnimalCreateSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     size = serializers.CharField(read_only = True)
     care_instructions = CareInstructionsSerializer(read_only=True)
@@ -31,5 +33,7 @@ class AnimalCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
         fields = "__all__"
+        
+
     
     
