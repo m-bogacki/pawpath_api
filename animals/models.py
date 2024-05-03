@@ -50,7 +50,7 @@ class Animal(models.Model):
     )
 
 
-    image = models.ImageField(upload_to=file_location, blank=True, null=False)
+    image = models.ImageField(upload_to=file_location, blank=True, null=True)
     name = models.CharField(max_length=60)
     species = models.CharField(choices=ANIMAL_CHOICES, max_length=10, default=ANIMAL_CHOICES[0])
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=False, related_name="animals")

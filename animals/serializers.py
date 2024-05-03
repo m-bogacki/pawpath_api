@@ -25,7 +25,7 @@ class AnimalListSerializer(serializers.ModelSerializer):
         
 
 class AnimalCreateSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+    image = Base64ImageField(required=False)
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     size = serializers.CharField(read_only = True)
     care_instructions = CareInstructionsSerializer(read_only=True)
